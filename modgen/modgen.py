@@ -50,8 +50,21 @@
 ############################################################################
 #IMPORTS>
 ############################################################################
-import xml.dom.minidom,re,sys,os,ttk,tkMessageBox
-from Tkinter import *
+import sys
+#validation for Old to New Python
+if sys.version_info < (3, 0):
+  #{
+  from Tkinter import *
+  import xml.dom.minidom,re,os,ttk,tkMessageBox
+  #}
+else:
+  #{
+  import tkinter as Tkinter
+  import tkinter.ttk as ttk
+  from tkinter import *
+  import xml.dom.minidom,re,os
+  import tkinter.messagebox as tkMessageBox
+  #}
 ############################################################################
 #EXPORT>
 ############################################################################
@@ -393,7 +406,7 @@ def MakePads(pins,meta):
     return MakePads_CONN_Dual(pins,meta)
   elif meta["package"]=='QUAD':
     return MakePads_QUAD(pins,meta)
-  print "Error: Un Supported Package"
+  print("Error: Un Supported Package")
   exit(0)
 ############################################################################
 #GUI FUNCTIONS>
@@ -626,7 +639,7 @@ def autouintadjust():
       rowx.set(mmtomil(rowx.get()))
       rowy.set(mmtomil(rowy.get()))
   except:
-    print 'Error in Unit Conversion'
+    print('Error in Unit Conversion')
     tkMessageBox.showerror("Error","Error in Unit Conversion")
 ############################################################################
 def packed():
@@ -638,61 +651,61 @@ def packed():
   #Run Validation Check
   Validate()  
   if er != "ok":    
-    print "Error In " + er
+    print("Error In " + er)
     return 0
-  print "Module Name: " + modname.get()
+  print("Module Name: " + modname.get())
   meta["modname"] = modname.get()
-  print "Reference Designator: " + refdes.get()
+  print("Reference Designator: " + refdes.get())
   meta["refname"] = refdes.get()
-  print "Package: " + package.get()
+  print("Package: " + package.get())
   meta["package"] = package.get()
-  print "Pitch: " + pitch.get()
+  print("Pitch: " + pitch.get())
   meta["pitch"] = pitch.get()
-  print "Pad x Dimension: " + padx.get()
+  print("Pad x Dimension: " + padx.get())
   meta["padx"] = padx.get()
-  print "Pad y Dimension: " + pady.get()
+  print("Pad y Dimension: " + pady.get())
   meta["pady"] = pady.get()
-  print "Pad Drill Diameter: " + paddrill.get()
+  print("Pad Drill Diameter: " + paddrill.get())
   meta["paddrill"] = paddrill.get()
-  print "Pad Shape: "+ padshape.get()
+  print("Pad Shape: "+ padshape.get())
   meta["padshape"] = padshape.get()
-  print "First Pad Square: " + ("True" if firstpinsquare.get() else "False")
+  print("First Pad Square: " + ("True" if firstpinsquare.get() else "False"))
   meta["firstpadsquare"] = 1 if firstpinsquare.get() else None
-  print "Self Locking Pattern: " + ("True" if locking.get() else "False")
+  print("Self Locking Pattern: " + ("True" if locking.get() else "False"))
   meta["locking"] = "5" if locking.get() else None
-  print "Pad Type: " + padtype.get()
+  print("Pad Type: " + padtype.get())
   meta["padtype"] = padtype.get()
   if padtype.get() == 'STD':
     meta["padlayermask"]='00E0FFFF' #normally for STD 
   else:
     meta["padlayermask"]='00888000' #notmally for SMD
-  print "Number of Pins: " + PIN_N.get()
+  print("Number of Pins: " + PIN_N.get())
   meta["PIN_N"] = PIN_N.get()
   pins = PinGen(int(meta["PIN_N"]))
-  print "Description for Module: " + description.get()
+  print("Description for Module: " + description.get())
   meta["description"] = description.get()
-  print "Keywords for Module: " + keywords.get()
+  print("Keywords for Module: " + keywords.get())
   meta["keywords"] = keywords.get()
   if meta["package"] in ['DIP','CONN-Dual','QUAD']:
-    print "Pin Row Spacing X:" + rowx.get()
+    print("Pin Row Spacing X:" + rowx.get())
     meta["rowx"] = rowx.get()
   else:
     meta["rowx"] = None
   if meta["package"] =='QUAD':
-    print "Pin Row Spacing Y:" + rowy.get()
+    print("Pin Row Spacing Y:" + rowy.get())
     meta["rowy"] = rowy.get()
-    print "Number of Pins Horizontally: " + PIN_N_HORIZ.get()
+    print("Number of Pins Horizontally: " + PIN_N_HORIZ.get())
     meta["PIN_N_HORIZ"] = PIN_N_HORIZ.get()
     meta["PIN_N_VERT"] = "%d"%(\
       (int(PIN_N.get())-(int(PIN_N_HORIZ.get())*2))/2)
-    print "Number of Pins Vertically: " + meta["PIN_N_VERT"]
+    print("Number of Pins Vertically: " + meta["PIN_N_VERT"])
   else:
     meta["rowy"] = None
     meta["PIN_N_HORIZ"] = None
     meta["PIN_N_VERT"] = None
   #Generate the Pad description
   meta["pads"]=MakePads(pins,meta)
-  print template_pcb%meta
+  print(template_pcb%meta)
   name = meta["modname"]
   if(locking.get()) and package.get() == 'SIP':
     name = name+"_LOCK"
@@ -705,7 +718,7 @@ def packed():
     fl.close()
     tkMessageBox.showinfo("Module Generator",\
       "Module "+meta["modname"]+" Written Successfully!!")
-    print " Module "+name+" written successfully"
+    print(" Module "+name+" written successfully")
   return 1
 ############################################################################
 def draw():
@@ -1021,7 +1034,7 @@ def autoname():
 ##    try:
       Validate()
       if er != "ok":    
-         print "Error In " + er
+         print("Error In " + er)
          return
       # Check for Berg Connector Single Row
       f = re.match("^(.)*(CONN)",modname.get().upper())
@@ -1384,7 +1397,7 @@ if __name__ == "__main__" :
   global meta       
          
   meta = {}
-  print __doc__
+  print(__doc__)
   ## Create Main Window
   root = Tk()
   root.title("Kicad Module Generator v"+__version__+\

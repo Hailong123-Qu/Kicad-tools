@@ -92,8 +92,6 @@ Limitation in Present Design
 -----------------------------
 Need to add Further useful automatic Name Generation.
 
-Dependency: This works on Python 2.7 and Higher version only
-
 
 License
 --------

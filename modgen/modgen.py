@@ -2,7 +2,7 @@
 ############################################################################
 ############################################################################
 """
-##  modgen - Module Generator Program for Kicad PCBnew V0.4
+##  modgen - Module Generator Program for Kicad PCBnew V0.5
 ## 
 ##  Designed by
 ##         A.D.H.A.R Labs Research,Bharat(India)
@@ -39,6 +39,8 @@
 ##          -- Automatic Name, Description and Keywords Generation
 ##              for SIP,DIP,CONN-Dual packages with support
 ##              for MM and Mils nameing
+## version 0.5 - (2012-11-21)
+##          -- Finxed minor bug in Name genration of CONN2X
 ##          
 ## TODO:
 ## - Automatic Name Generation
@@ -55,7 +57,7 @@ from Tkinter import *
 ############################################################################
 __author__ = "Abhijit Bose(info@adharlabs.in)"
 __author_email__="info@adharlabs.in"
-__version__ = "0.4"
+__version__ = "0.5"
 ############################################################################    
 #DEBUG> Print Additional Debug Messages
 #  if needed make _debug_message = 1
@@ -97,7 +99,30 @@ At %(padtype)s N %(layermask)s
 Ne 0 ""
 Po %(pinx)s %(piny)s
 $EndPAD"""
-
+template_lib = """EESchema-LIBRARY Version 2.3  Date: 6/1/2012-05:30AM IST
+#encoding utf-8
+#
+# %(compname)s
+#
+DEF %(compname)s %(refname)s 0 40 Y Y 1 F N
+F0 "%(refname)s" 0 %(refname_y)s 50 H V C C N N
+F1 "%(compname)s" 0 %(compname_y)s 50 H V C C N N
+DRAW
+%(box)s
+%(pins)s
+ENDDRAW
+ENDDEF
+#
+# End Library
+"""
+template_dcm = """EESchema-DOCLIB  Version 2.0  Date: 6/1/2012-05:30AM IST
+#
+$CMP %(compname)s
+%(dk)s
+$ENDCMP
+#
+# End Doc Library
+"""
 ############################################################################
 #FORMAT FUNCTIONS>
 ############################################################################
@@ -1112,8 +1137,8 @@ _%(drill)s%(shape)s%(type)s"""
       elif h!=None and package.get()=='CONN-Dual':
         refdes.set("J")#Set the Ref
         
-        desc["name"] = h.group(2)[:4]
-        keys["name"] = h.group(2)[:4]
+        desc["name"] = h.group(2)[:6]
+        keys["name"] = h.group(2)[:6]
 
         desc["pin"] = "%d"%(int(PIN_N.get())/2)
         keys["pin"] = "%d"%(int(PIN_N.get())/2)

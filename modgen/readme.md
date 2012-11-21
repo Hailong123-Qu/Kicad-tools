@@ -1,4 +1,4 @@
-modgen - Module Generator Program for Kicad PCBnew V0.4
+modgen - Module Generator Program for Kicad PCBnew V0.5
 ===========================================================
 
 This *Python & Tkinter* based GUI tool designed to create Modules
@@ -23,7 +23,6 @@ for this tool is also available.
 
 
 **Dependency: This works on Python 2.7 and Higher version only
-
 (For Ubuntu/Debian Linux Need to install python-tk package)**
 
 
@@ -85,18 +84,15 @@ version 0.4 - (2012-04-27)
  *   Automatic Name, Description and Keywords Generation 
 for SIP,DIP,CONN-Dual packages with support for MM and Mils nameing
 
+version 0.5 - (2012-11-21)
+
+ *   Fixed minor bug in CONN2X generation
 
 Limitation in Present Design
 -----------------------------
-
- * Need to integrate library generation.
-
- * Add option to Load the data from file to fill in the component details
-
+Need to add Further useful automatic Name Generation.
 
 Dependency: This works on Python 2.7 and Higher version only
-
-(For Ubuntu/Debian Linux Need to install python-tk package)
 
 
 License

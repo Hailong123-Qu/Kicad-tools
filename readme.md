@@ -9,3 +9,5 @@ A handly set of tools for Components and Module creation in Kicad.
 [modgen](https://github.com/AdharLabs/Kicad-tools/tree/master/modgen)
 - a Pyhton base Module(PCB Footprint or Land Patten) Generator for Kicad PCBnew
 
+[partgen](https://github.com/AdharLabs/Kicad-tools/tree/master/partgen)
+- Combination of Schematics(libgen) and Footprint(modgen) Generation for Kicad

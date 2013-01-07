@@ -22,9 +22,9 @@ for this tool is also available.
 ![Picture](https://github.com/AdharLabs/Kicad-tools/raw/master/modgen/modgenui.PNG)
 
 
-**Dependency: This works on Python 2.7 and Higher version only
-(For Ubuntu/Debian Linux Need to install python-tk package)**
-
+**Dependency: This works on Python 2.6 and Higher version only
+(For Ubuntu/Debian Linux Need to install python-tk and python-ttk package)**
+ - Thanks to V Ram for the Python 2.6 tip on Ubuntu older versions
 
 Designed By
 -----------
@@ -100,5 +100,4 @@ Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
 [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/)
 
 [Full Text](http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode)
-
 

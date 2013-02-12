@@ -39,6 +39,8 @@
 ##          -- Automatic Name, Description and Keywords Generation
 ##              for SIP,DIP,CONN-Dual packages with support
 ##              for MM and Mils nameing
+## version 3.0.1 - (2012-11-30)
+##          -- Upgraded to python 3
 ## version 0.5 - (2012-11-21)
 ##          -- Finxed minor bug in Name genration of CONN2X
 ##          
@@ -166,7 +168,7 @@ def MetaData(comp):
   "Extract the component description parameters (common to all pins)"
   el = comp.getElementsByTagName("module")[0]
   d = {}
-  for name, value in el.attributes.items() :
+  for name, value in list(el.attributes.items()) :
     d[name] = value
   return d
 ############################################################################
@@ -224,7 +226,7 @@ def MakePads_DIP(pins,meta):
   pin = {}
   pitch = float(meta["pitch"]) * 10
   #Set First Half of the Pins
-  for i in range(0,len(pins)/2):
+  for i in range(0,int(len(pins)/2)):
     pin["piny"]="%d"%(y)
     pin["pinx"]="%d"%(x)
     y = y + pitch
@@ -242,7 +244,7 @@ def MakePads_DIP(pins,meta):
   x = float(meta["rowx"])*10
   y = y - pitch
   #Set Second Half of the Pins
-  for i in range(len(pins)/2,len(pins)):
+  for i in range(int(len(pins)/2),len(pins)):
     pin["piny"]="%d"%(y)
     pin["pinx"]="%d"%(x)
     y = y - pitch
@@ -478,7 +480,7 @@ def Validate():
     k = float(padx.get())*1.0
     er = "ok"
     if (k<=0):
-      tkMessageBox.showerror("Error","Invalid Pad X Value")        
+      tkMessageBox.showerror("Error","Invalid Pad X Value")    
       er = "padx"
       if units.get()=="mils":
         padx.set("70")
@@ -486,7 +488,7 @@ def Validate():
         padx.set("1.778")
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Pad X Value")        
+    tkMessageBox.showerror("Error","Invalid Pad X Value") 
     er = "padx"
     if units.get()=="mils":
       padx.set("70")
@@ -498,7 +500,7 @@ def Validate():
     k = float(pady.get())*1.0
     er = "ok"
     if(k<=0):
-      tkMessageBox.showerror("Error","Invalid Pad Y Value")        
+      tkMessageBox.showerror("Error","Invalid Pad Y Value")      
       er = "pady"
       if units.get()=="mils":
         pady.set("70")
@@ -506,7 +508,7 @@ def Validate():
         pady.set("1.778")
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Pad Y Value")        
+    tkMessageBox.showerror("Error","Invalid Pad Y Value")      
     er = "pady"
     if units.get()=="mils":
       pady.set("70")
@@ -518,19 +520,19 @@ def Validate():
     k = float(paddrill.get())*1.0
     er = "ok"
     if(k<=10 or k>250) and padtype.get()=='STD'and units.get()=="mils":
-      tkMessageBox.showerror("Error","Invalid Pad Drill Value")        
+      tkMessageBox.showerror("Error","Invalid Pad Drill Value") 
       er = "paddrill"
       paddrill.set("35")
       return 1
     elif(k<=0.254 or k>6.1) and padtype.get()=='STD'and units.get()=="mm":
-      tkMessageBox.showerror("Error","Invalid Pad Drill Value")        
+      tkMessageBox.showerror("Error","Invalid Pad Drill Value")      
       er = "paddrill"
       paddrill.set(".889")
       return 1
     #elif padtype.get()=='SMD':#Allow Even Drils if needed
     #  paddrill.set("0")
   except:    
-    tkMessageBox.showerror("Error","Invalid Pad Drill Value")        
+    tkMessageBox.showerror("Error","Invalid Pad Drill Value") 
     er = "paddrill"
     if units.get() == "mils":
       paddrill.set("35")
@@ -542,17 +544,17 @@ def Validate():
     k = int(PIN_N.get())*1
     er = "ok"
     if(k<=1):
-      tkMessageBox.showerror("Error","Invalid Number of Pins")        
+      tkMessageBox.showerror("Error","Invalid Number of Pins")  
       er = "PIN_N"
       PIN_N.set("8")
       return 1
     if (k%2)!=0 and (package.get() in ['DIP','CONN-Dual']):
-      tkMessageBox.showerror("Error","Invalid Number of Pins")        
+      tkMessageBox.showerror("Error","Invalid Number of Pins")    
       er = "PIN_N"
       PIN_N.set("8")
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Number of Pins")        
+    tkMessageBox.showerror("Error","Invalid Number of Pins")    
     er = "PIN_N"
     PIN_N.set("8")
     return 1
@@ -561,7 +563,7 @@ def Validate():
     k = float(rowx.get())*1
     er = "ok"
     if (k<=0) and (package.get() in ['DIP','CONN-Dual']):
-      tkMessageBox.showerror("Error","Invalid Row X Spacing")        
+      tkMessageBox.showerror("Error","Invalid Row X Spacing")    
       er = "RowX"
       if units.get() == "mils":
         rowx.set("10")
@@ -569,7 +571,7 @@ def Validate():
         rowx.set("0.254")
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Row X Spacing")        
+    tkMessageBox.showerror("Error","Invalid Row X Spacing")  
     er = "RowX"
     return 1
   # Check Row Y
@@ -577,7 +579,7 @@ def Validate():
     k = float(rowy.get())*1
     er = "ok"
     if (k<=0) and (package.get() in ['QUAD']):
-      tkMessageBox.showerror("Error","Invalid Row Y Spacing")        
+      tkMessageBox.showerror("Error","Invalid Row Y Spacing") 
       er = "RowY"
       if units.get() == "mils":
         rowy.set("10")
@@ -585,7 +587,7 @@ def Validate():
         rowy.set("0.254")
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Row Y Spacing")        
+    tkMessageBox.showerror("Error","Invalid Row Y Spacing")  
     er = "RowY"
     return 1
   # Check PIN_N_HORIZ
@@ -593,12 +595,12 @@ def Validate():
     k = int(PIN_N_HORIZ.get())*1
     er = "ok"
     if (k<=0) and (package.get() in ['QUAD']):
-      tkMessageBox.showerror("Error","Invalid Number of Pins Horizontally")        
+      tkMessageBox.showerror("Error","Invalid Number of Pins Horizontally")   
       er = "PIN_N_HORIZ"
       PIN_N_HORIZ.set("%d"%(int(PIN_N.get())/4))
       return 1
   except:    
-    tkMessageBox.showerror("Error","Invalid Number of Pins Horizontally")        
+    tkMessageBox.showerror("Error","Invalid Number of Pins Horizontally") 
     er = "PIN_N_HORIZ"
     return 1
   #Check The Description
@@ -1150,6 +1152,8 @@ _%(drill)s%(shape)s%(type)s"""
       elif h!=None and package.get()=='CONN-Dual':
         refdes.set("J")#Set the Ref
         
+        #desc["name"] = h.group(2)[:4]
+        #keys["name"] = h.group(2)[:4]
         desc["name"] = h.group(2)[:6]
         keys["name"] = h.group(2)[:6]
 

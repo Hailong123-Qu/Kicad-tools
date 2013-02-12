@@ -31,6 +31,9 @@
 ##                 > Support for Single File parameter
 ##                 > DCM File generation Incorporated
 ##
+## version 3.0.1 - (2012-11-30)
+##          -- Upgraded to python 3
+##
 ############################################################################
 ############################################################################
 #IMPORTS>
@@ -101,7 +104,7 @@ def MetaData(comp):
   "Extract the component description parameters (common to all pins)"
   el = comp.getElementsByTagName("component")[0]
   d = {}
-  for name, value in el.attributes.items() :
+  for name, value in list(el.attributes.items()) :
     d[name] = value
   return d
 ############################################################################
@@ -116,8 +119,8 @@ def GetTemplate_DIP(pins, d) :
       print("Package has odd number of pins")
       sys.exit(-1)
     # Split the Pin array in Two parts
-    left_p = pins[:pl/2]
-    right_p = pins[pl/2:]
+    left_p = pins[:int(pl/2)]
+    right_p = pins[int(pl/2):]
     # Height dependant on Number of Pins Spaced at 100mil
     height = (len(left_p)+1)*100
     # Width for the body according to Pin String
@@ -278,10 +281,10 @@ def GetTemplate_QUAD(pins, d) :
     d["refname_y"] = str(0)
     d["compname_y"] = str(-100)
     # Segment the Pins into 4 parts
-    left_p = pins[:pl/4]
-    bottom_p = pins[pl/4:pl/2]
-    right_p = pins[pl/2:3*pl/4]
-    top_p =pins[3*pl/4:]
+    left_p = pins[:int(pl/4)]
+    bottom_p = pins[int(pl/4):int(pl/2)]
+    right_p = pins[int(pl/2):int(3*pl/4)]
+    top_p =pins[int(3*pl/4):]
     # Make the Box Parameter
     d["box"] = "S %d %d %d %d 0 1 0 N"%(left,top,right,bottom)
     # Pin Length for SIP
@@ -421,7 +424,7 @@ N: NOT CONNECTED
 Additionally if no pin names are needed then PIN_N="<Number of Pins>"
 needs to be used. The created pins would have PASSIVE electrical Type.
 Example.
-<component refname="J" compname="MOLEX_8" package="SIL" PIN_N="8">
+<component refname="J" compname="MOLEX_8" package="SIP" PIN_N="8">
 </component>
 
 Schematics Symbol Packages:-

@@ -15,12 +15,13 @@ for this tool is also available.
 
 Usage
 -----
-`python libgen <.xml file> <.lib file>`
+`python libgen <.xml file> -l <.lib file>`
   
 Where `<.xml file>` is a file containing the *PIN descriptions*
-and `<.lib file>` is the name of the generated component description.
-The `<.lib file>` is **optional** and can be *generated automatically* from the
-`<.xml file>`.The `<.lib file>` name would be used to generate the `.DCM`
+and `<.lib file>` is the name of the generated component description. Multiple
+`<.xml file>`s can be specified to create a multi-component library. The `<.lib file>`
+ is **optional** and can be *generated automatically* from the first
+`<.xml file>`. The `<.lib file>` name would be used to generate the `.DCM`
 which contains the *description* and *keywords* for the component.
 
 `<.xml file>` is an XML format file, containing the *pin descriptions* and

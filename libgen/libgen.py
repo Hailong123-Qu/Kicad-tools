@@ -39,6 +39,7 @@
 #IMPORTS>
 import xml.dom.minidom,sys,os,re
 from datetime import datetime
+import argparse
 ############################################################################
 #EXPORT>
 __all__=['Help_xml2lib','xml2lib']
@@ -51,9 +52,10 @@ __version__ = "0.1"
 _debug_message = 0
 ############################################################################
 #FORMAT>Lib
-template_lib = """EESchema-LIBRARY Version 2.3  Date: 6/1/2012-05:30AM IST
+template_lib_header = """EESchema-LIBRARY Version 2.3  Date: 6/1/2012-05:30AM IST
 #encoding utf-8
-#
+"""
+template_lib_component = """#
 # %(compname)s
 #
 DEF %(compname)s %(refname)s 0 40 Y Y 1 F N
@@ -67,12 +69,17 @@ ENDDEF
 #
 # End Library
 """
-template_dcm = """EESchema-DOCLIB  Version 2.0  Date: 6/1/2012-05:30AM IST
-#
+template_lib_footer = """#
+# End Library
+"""
+template_dcm_header = """EESchema-DOCLIB  Version 2.0  Date: 6/1/2012-05:30AM IST
+"""
+template_dcm_component = """#
 $CMP %(compname)s
 %(dk)s
 $ENDCMP
-#
+"""
+template_dcm_footer = """#
 # End Doc Library
 """
 ############################################################################
@@ -377,14 +384,12 @@ def GetDcmDict(d):
   return d
 ############################################################################
 #OTHER FUNCTIONS>
-def Help_xml2lib():
-  print("""Usage: %s <spec file> [<lib file>]
-  
+help_text="""
 Where <spec file> is a file containing the PIN descriptions
 and <lib file> is the name of the generated component description.
 The <lib file> is optional and can be generated automatically from the
-<spec file>. The <lib file> name would be used to generate the .DCM
-also with the same name.
+first <spec file>. The <lib file> name would be used to generate the
+.DCM also with the same name.
 
 <spec file> is an XML format file, containing the pin descriptions and
 optional meta data.  It contains a single XML element 'component'.
@@ -486,13 +491,52 @@ QUAD -
             |   |   ..   |   |
             |   |   ..   |   |
         
-"""%os.path.split(sys.argv[0])[1])
-  sys.exit(-1)
+"""
+
 ############################################################################
 #Processing FUNCTION>
 def xml2lib(srcxmlfile,destlibfile):
+  """Fuction to convert a single file in Xml Format to a Kicad lib file"""
+  dlfh = open(destlibfile,"w")
+  dlfh.write(template_lib_header)
+
+  dcmfile = re.match("(.*)\..*",destlibfile).group(1)+".dcm"
+  dcmfh = open(dcmfile,"w")
+  dcmfh.write(template_dcm_header)
+
+  xml2lib_fh(srcxmlfile,dlfh,dcmfh)
+
+  dlfh.write(template_lib_footer)
+  dlfh.close()
+
+  dcmfh.write(template_dcm_footer)
+  dcmfh.close()
+  print("File %s written"%destlibfile)
+  print("File %s written"%dcmfile)
+
+def xmls2lib(srcxmlfiles,destlibfile):
+  """Fuction to convert several files in Xml Format to a single Kicad lib file"""
+  dlfh = open(destlibfile,"w")
+  dlfh.write(template_lib_header)
+
+  dcmfile = re.match("(.*)\..*",destlibfile).group(1)+".dcm"
+  dcmfh = open(dcmfile,"w")
+  dcmfh.write(template_dcm_header)
+
+  for srcxmlfile in srcxmlfiles:
+    xml2lib_fh(srcxmlfile,dlfh,dcmfh)
+
+  dlfh.write(template_lib_footer)
+  dlfh.close()
+
+  dcmfh.write(template_dcm_footer)
+  dcmfh.close()
+  print("File %s written"%destlibfile)
+  print("File %s written"%dcmfile)
+
+def xml2lib_fh(srcxmlfile,dlfh,dcmfh):
   #{ Begin Lib Gen
-  """Fuction to convert the Xml Format to Kicad lib file format"""
+  """Fuction to convert the Xml Format and append to an open Kicad lib file"""
   # Read in the XML file
   xmlcomp = xml.dom.minidom.parse( srcxmlfile )
   # Read Meta Data
@@ -518,49 +562,44 @@ def xml2lib(srcxmlfile,destlibfile):
   # Agument the Dictionary with DCM Parameters as well
   d = GetDcmDict(d)
   # Apply the Formatting on Lib Template
-  out = template_lib%d
+  out = template_lib_component%d
   print(out)
   # Apply Optional Dcm Template
   outdcm =""
   if d["dk"] != "":
-    outdcm = template_dcm%d
+    outdcm = template_dcm_component%d
     print(outdcm)
   # Write The File
-  fl = open(destlibfile,"w")
-  fl.write(out)
-  fl.close()
-  print("File %s written"%destlibfile)
+  dlfh.write(out)
   # If Description exist the write the DCM
   if outdcm != "":
-    dcmfl = re.match("(.*)\..*",destlibfile).group(1)+".dcm"
-    fl = open(dcmfl,"w")
-    fl.write(outdcm)
-    fl.close()
-    print("File %s written"%dcmfl )
+    dcmfh.write(outdcm)
   #} End of Lib Gen
   
 ############################################################################
 #MAIN FUNCTION>
 if __name__ == "__main__" :
-  if not sys.argv[1:] :#Atleast one Argument Supplied
-    Help_xml2lib()
-  if not os.path.isfile(sys.argv[1]) :#Check if the Source exists
-    Help_xml2lib()
+  parser = argparse.ArgumentParser(description=help_text,formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument('specfile', metavar='<spec file>', nargs="+", help='PIN descriptions in XML')
+  parser.add_argument('-l', dest='library', metavar='<lib file>', help='output library name')
+
+  args = parser.parse_args()
+
   #File Names
-  srcfl = sys.argv[1]
+  srcfls = args.specfile
   destfl = ""
-  if sys.argv[2:] :#if Two Arguments were provided
-    destfl = sys.argv[2]
-  else:#if only One Argument
-    fl = re.match("(.*)\..*",srcfl)
+  if args.library!=None:
+    destfl = args.library
+  else:
+    fl = re.match("(.*)\..*",srcfl[0])
     if fl:#Create the Name of the Lib
       destfl = str(fl.group(1))+".lib"
     else:
-      destfl = srcfl + ".lib"      
+      destfl = srcfls[0] + ".lib"
   # Print the Introduction
   print(__doc__)
-  print("Source File> "+srcfl)
+  print("Source Files> "+', '.join(srcfls))
   print("Destination File> "+destfl)
   print()
   # Process the files
-  xml2lib(srcfl,destfl)
+  xmls2lib(srcfls,destfl)

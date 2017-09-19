@@ -39,6 +39,7 @@
 #IMPORTS>
 import xml.dom.minidom,sys,os,re
 from datetime import datetime
+import argparse
 ############################################################################
 #EXPORT>
 __all__=['Help_xml2lib','xml2lib']
@@ -377,9 +378,7 @@ def GetDcmDict(d):
   return d
 ############################################################################
 #OTHER FUNCTIONS>
-def Help_xml2lib():
-  print("""Usage: %s <spec file> [<lib file>]
-  
+help_text="""
 Where <spec file> is a file containing the PIN descriptions
 and <lib file> is the name of the generated component description.
 The <lib file> is optional and can be generated automatically from the
@@ -486,8 +485,8 @@ QUAD -
             |   |   ..   |   |
             |   |   ..   |   |
         
-"""%os.path.split(sys.argv[0])[1])
-  sys.exit(-1)
+"""
+
 ############################################################################
 #Processing FUNCTION>
 def xml2lib(srcxmlfile,destlibfile):
@@ -542,16 +541,18 @@ def xml2lib(srcxmlfile,destlibfile):
 ############################################################################
 #MAIN FUNCTION>
 if __name__ == "__main__" :
-  if not sys.argv[1:] :#Atleast one Argument Supplied
-    Help_xml2lib()
-  if not os.path.isfile(sys.argv[1]) :#Check if the Source exists
-    Help_xml2lib()
+  parser = argparse.ArgumentParser(description=help_text,formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument('specfile', metavar='<spec file>', help='PIN descriptions in XML')
+  parser.add_argument('-l', dest='library', metavar='<lib file>', help='output library name')
+
+  args = parser.parse_args()
+
   #File Names
-  srcfl = sys.argv[1]
+  srcfl = args.specfile
   destfl = ""
-  if sys.argv[2:] :#if Two Arguments were provided
-    destfl = sys.argv[2]
-  else:#if only One Argument
+  if args.library!=None:
+    destfl = args.library
+  else:
     fl = re.match("(.*)\..*",srcfl)
     if fl:#Create the Name of the Lib
       destfl = str(fl.group(1))+".lib"
